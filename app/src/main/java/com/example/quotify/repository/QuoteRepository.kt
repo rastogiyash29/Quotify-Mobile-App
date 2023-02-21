@@ -15,23 +15,31 @@ class QuoteRepository(
 ) {
 
     //defining liveData
-    private val quotesLiveData=MutableLiveData<QuoteList>()
+    private val quotesLiveData = MutableLiveData<QuoteList>()
 
-    val quotes:LiveData<QuoteList>
-    get() = quotesLiveData
+    val quotesFromInternet: LiveData<QuoteList>
+        get() = quotesLiveData
 
-
-    suspend fun getQuotesByPage(page:Int){
-        if(NetworkUtils.isInternetAvailable(applicationContext)){
-            val quoteListResponse=quotesAPI.getQuotesbyPage(page)
-            if(quoteListResponse!=null && quoteListResponse.body()!=null){
-                quoteDatabase.quoteDao().addQuotes(quoteListResponse.body()!!.results)  //adding all online quotes in database
+    suspend fun getQuotesByPage(page: Int) {
+        if (NetworkUtils.isInternetAvailable(applicationContext)) {
+            val quoteListResponse = quotesAPI.getQuotesbyPage(page)
+            if (quoteListResponse != null && quoteListResponse.body() != null) {
+//                quoteDatabase.quoteDao()
+//                    .addQuotes(quoteListResponse.body()!!.results)  //adding all online quotes in database
                 quotesLiveData.postValue(quoteListResponse.body())
             }
-        }else{
-            val quotesFromDB=quoteDatabase.quoteDao().getQuotes()
-            val quoteList=QuoteList(1,1,1,quotesFromDB,1,1)
-            quotesLiveData.postValue(quoteList)
         }
+    }
+
+    //defining liveData
+    private val DBQuoteList = MutableLiveData<QuoteList>()
+
+    val quotesFromDB: LiveData<QuoteList>
+        get() = DBQuoteList
+
+    suspend fun getQuotesFromDB() {
+        val quotesFromDB = quoteDatabase.quoteDao().getQuotes()
+        val quoteList = QuoteList(1, 1, 1, quotesFromDB, 1, 1)
+        DBQuoteList.postValue(quoteList)
     }
 }
