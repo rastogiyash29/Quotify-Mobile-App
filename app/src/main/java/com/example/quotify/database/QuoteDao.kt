@@ -1,5 +1,6 @@
 package com.example.quotify.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -10,11 +11,11 @@ import com.example.quotify.models.Result
 interface QuoteDao {
 
     @Insert
-    suspend fun addQuotes(quotes:List<Result>)
+    suspend fun addQuotes(result: Result)
 
     @Query("SELECT * FROM quote_table")
-    suspend fun getQuotes():List<Result>
+    fun getQuotes():LiveData<List<Result>>
 
     @Delete
-    suspend fun deleteQuote(quote:Result)
+    suspend fun deleteQuote(result:Result)
 }

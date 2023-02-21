@@ -1,16 +1,21 @@
 package com.example.quotify.repository
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.quotify.database.QuoteDatabase
 import com.example.quotify.live_quotes.QuotesAPI
+import com.example.quotify.models.MyQuote
 import com.example.quotify.models.QuoteList
+import com.example.quotify.models.Result
 import com.example.quotify.utils.NetworkUtils
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class QuoteRepository(
     private val quotesAPI: QuotesAPI,
-    private val quoteDatabase: QuoteDatabase,
+    val quoteDatabase: QuoteDatabase,
     private val applicationContext: Context
 ) {
 
@@ -24,22 +29,23 @@ class QuoteRepository(
         if (NetworkUtils.isInternetAvailable(applicationContext)) {
             val quoteListResponse = quotesAPI.getQuotesbyPage(page)
             if (quoteListResponse != null && quoteListResponse.body() != null) {
-//                quoteDatabase.quoteDao()
-//                    .addQuotes(quoteListResponse.body()!!.results)  //adding all online quotes in database
                 quotesLiveData.postValue(quoteListResponse.body())
             }
         }
     }
 
-    //defining liveData
-    private val DBQuoteList = MutableLiveData<QuoteList>()
-
-    val quotesFromDB: LiveData<QuoteList>
-        get() = DBQuoteList
-
-    suspend fun getQuotesFromDB() {
-        val quotesFromDB = quoteDatabase.quoteDao().getQuotes()
-        val quoteList = QuoteList(1, 1, 1, quotesFromDB, 1, 1)
-        DBQuoteList.postValue(quoteList)
+    //    Always keep primaryKey value as 0 to let it auto-regenerate
+    fun addInDB() {
+        GlobalScope.launch {
+            quoteDatabase.quoteDao()
+                .addQuotes(Result(0, "yoyo", "", "This is Result QUote", "", "", "", 1))
+        }
     }
+
+    fun addInDiary() {
+        GlobalScope.launch {
+            quoteDatabase.diaryDao().insertQuote(MyQuote(0, "Consistency is Key", "~yash"))
+        }
+    }
+
 }

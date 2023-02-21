@@ -1,52 +1,59 @@
 package com.example.quotify.view_models
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quotify.models.Result
+import com.example.quotify.models.MyQuote
 import com.example.quotify.models.QuoteList
 import com.example.quotify.repository.QuoteRepository
 import com.example.quotify.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val repository: QuoteRepository,private var context:Context):ViewModel() {
+class MainViewModel( val repository: QuoteRepository, private var context: Context) :
+    ViewModel() {
 
-    private var mode=0      //0 is online mode and 1 is offline mode
-    private val totalModes=2
-    var quotes:LiveData<QuoteList>
+    var mode = 0      //0 is online mode and 1 is offline mode 2 is diary mode
+    private val totalModes = 3
+    private val pointers = IntArray(totalModes)
+    private val pageNumber = 1
+    lateinit var quotesFromDBlateinit:LiveData<List<Result>>
 
-
-    init{
-        viewModelScope.launch(Dispatchers.IO){
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getQuotesByPage(1)
-            repository.getQuotesFromDB()
+            quotesFromDBlateinit=repository.quoteDatabase.quoteDao().getQuotes()
         }
-        mode=1
-        quotes=quotesFromDB
-        switchModes()
+        mode = 2
     }
 
-    val quotesFromInternet:LiveData<QuoteList>
-    get()=repository.quotesFromInternet
+    val quotesFromInternet: LiveData<QuoteList>
+        get() = repository.quotesFromInternet
 
-    val quotesFromDB:LiveData<QuoteList>
-    get()=repository.quotesFromDB
+    fun switchModes() {
+        mode = (mode + 1) % totalModes
+        if (mode == 0) {    //online mode
+            if (NetworkUtils.isInternetAvailable(context)) {
 
-
-    fun switchModes(){
-        mode=(mode+1)%totalModes
-        if(mode==0){    //online mode
-            if(NetworkUtils.isInternetAvailable(context)){
-                quotes=quotesFromInternet
-
-            }else{
+            } else {
                 switchModes()
             }
-        }else if(mode==1){  //offline mode
-            quotes=quotesFromDB
+        } else if (mode == 1) {  //offline mode
+
+        } else {  //diary mode
+
         }
     }
 
+    fun addQuote() {
+        if (mode == 1) {
+            repository.addInDB()
+        } else if (mode == 2) {
+            repository.addInDiary()
+        }
+    }
 
 }

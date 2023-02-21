@@ -29,27 +29,25 @@ class MainActivity : AppCompatActivity() {
                 MainViewModel::class.java
             )
 
-        mainViewModel.quotes.observe(this, {
-            Toast.makeText(this, "${it.results.size.toString()} inits", Toast.LENGTH_SHORT).show()
-            binding.showData.text = it.toString()
+        binding.showData.text=mainViewModel.repository.quoteDatabase.diaryDao().getQuotes().value.toString()
+
+        mainViewModel.repository.quoteDatabase.diaryDao().getQuotes().observe(this, {
+            if (it != null)
+                binding.showData.text = it.toString()
+        })
+
+        mainViewModel.repository.quoteDatabase.quoteDao().getQuotes().observe(this,{
+            if (it != null)
+                binding.showData.text = it.toString()
         })
 
         binding.switchButton.setOnClickListener {
             switchMode()
-            if (mainViewModel.quotes.value != null) {
-                Toast.makeText(
-                    this,
-                    mainViewModel.quotes.value!!.results.size.toString(),
-                    Toast.LENGTH_SHORT
-                ).show()
-                binding.showData.text = mainViewModel.quotes.value!!.toString()
-            }
         }
 
-
-//        binding.addButton.setOnClickListener {
-//            addQuote()
-//        }
+        binding.addButton.setOnClickListener {
+            addQuote()
+        }
 //
 //        binding.deleteButton.setOnClickListener {
 //            deleteQuote()
@@ -69,11 +67,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addQuote() {
-
+        mainViewModel.addQuote()
     }
 
     private fun switchMode() {
         mainViewModel.switchModes()
+        if (mainViewModel.mode == 0) {
+            binding.Mode.text = "Online Mode"
+            if (mainViewModel.quotesFromInternet.value != null) {
+                binding.showData.text = mainViewModel.quotesFromInternet.value!!.toString()
+            }
+        } else if (mainViewModel.mode == 1) {
+            binding.Mode.text = "Offline DB Mode"
+            binding.showData.text = mainViewModel.quotesFromDBlateinit.value.toString()
+        } else if (mainViewModel.mode == 2) {
+            binding.Mode.text = "Diary Mode"
+            binding.showData.text = mainViewModel.repository.quoteDatabase.diaryDao().getQuotes().value.toString()
+        }
     }
 
 
