@@ -2,16 +2,13 @@ package com.example.quotify
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.quotify.databinding.ActivityMainBinding
-import com.example.quotify.live_quotes.QuotesAPI
-import com.example.quotify.live_quotes.RetrofitHelper
-import com.example.quotify.repository.QuoteRepository
+import com.example.quotify.models.Result
 import com.example.quotify.view_models.MainViewModel
 import com.example.quotify.view_models.MainViewModelFactory
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
@@ -29,18 +26,28 @@ class MainActivity : AppCompatActivity() {
                 MainViewModel::class.java
             )
 
-        binding.showData.text=mainViewModel.repository.quoteDatabase.diaryDao().getQuotes().value.toString()
-
-        mainViewModel.repository.quoteDatabase.diaryDao().getQuotes().observe(this, {
-            if (it != null)
-                binding.showData.text = it.toString()
+        //Setting LiveData Observers
+        mainViewModel.getQuotesFromInternetLiveData().observe(this,{
+            mainViewModel.setquotesFromInternetList(it)
+            if(it!=null)
+                binding.showData.text=it.toString()
         })
 
-        mainViewModel.repository.quoteDatabase.quoteDao().getQuotes().observe(this,{
-            if (it != null)
-                binding.showData.text = it.toString()
+        mainViewModel.getQuotesFromDatabaseLiveData().observe(this,{
+            mainViewModel.setquotesFromDatabaseList(it)
+            if(it!=null)
+                binding.showData.text=it.toString()
         })
 
+        mainViewModel.getQuotesFromDiaryLiveData().observe(this,{
+            mainViewModel.setquotesFromDiaryList(it)
+            if(it!=null)
+                binding.showData.text=it.toString()
+        })
+
+        binding.Mode.text="Online Mode"
+
+        //Setting onClick Listeners
         binding.switchButton.setOnClickListener {
             switchMode()
         }
@@ -48,43 +55,36 @@ class MainActivity : AppCompatActivity() {
         binding.addButton.setOnClickListener {
             addQuote()
         }
-//
-//        binding.deleteButton.setOnClickListener {
-//            deleteQuote()
-//        }
-//
-//        binding.clearButton.setOnClickListener {
-//            clearAllQuotes()
-//        }
-    }
 
-    private fun clearAllQuotes() {
+        binding.deleteButton.setOnClickListener {
+            deleteQuote()
+        }
 
-    }
-
-    private fun deleteQuote() {
-
-    }
-
-    private fun addQuote() {
-        mainViewModel.addQuote()
-    }
-
-    private fun switchMode() {
-        mainViewModel.switchModes()
-        if (mainViewModel.mode == 0) {
-            binding.Mode.text = "Online Mode"
-            if (mainViewModel.quotesFromInternet.value != null) {
-                binding.showData.text = mainViewModel.quotesFromInternet.value!!.toString()
-            }
-        } else if (mainViewModel.mode == 1) {
-            binding.Mode.text = "Offline DB Mode"
-            binding.showData.text = mainViewModel.quotesFromDBlateinit.value.toString()
-        } else if (mainViewModel.mode == 2) {
-            binding.Mode.text = "Diary Mode"
-            binding.showData.text = mainViewModel.repository.quoteDatabase.diaryDao().getQuotes().value.toString()
+        binding.clearButton.setOnClickListener {
+            clearAllQuotes()
         }
     }
 
+    private fun clearAllQuotes() {
+        mainViewModel.clearQuotes()
+    }
 
+    private fun deleteQuote() {
+        mainViewModel.delete()
+    }
+
+    private fun addQuote() {
+        mainViewModel.addQuote(Result(0,"","~yash","","Consistent in DB","","",1))
+    }
+
+    private fun switchMode() {
+        binding.showData.text=mainViewModel.switchModes()
+        if (mainViewModel.mode == 0) {
+            binding.Mode.text = "Online Mode"
+        } else if (mainViewModel.mode == 1) {
+            binding.Mode.text = "Offline DB Mode"
+        } else if (mainViewModel.mode == 2) {
+            binding.Mode.text = "Diary Mode"
+        }
+    }
 }

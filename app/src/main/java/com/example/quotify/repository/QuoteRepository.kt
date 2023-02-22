@@ -12,20 +12,45 @@ import com.example.quotify.models.Result
 import com.example.quotify.utils.NetworkUtils
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 class QuoteRepository(
     private val quotesAPI: QuotesAPI,
-    val quoteDatabase: QuoteDatabase,
+    private val quoteDatabase: QuoteDatabase,
     private val applicationContext: Context
 ) {
 
-    //defining liveData
+    //defining MutableliveData for Online Quotes
     private val quotesLiveData = MutableLiveData<QuoteList>()
 
-    val quotesFromInternet: LiveData<QuoteList>
+    private lateinit var quotesFromDiary: LiveData<List<MyQuote>>
+    private lateinit var quotesFromDatabase:LiveData<List<Result>>
+    private val quotesFromInternet: LiveData<QuoteList>
         get() = quotesLiveData
 
-    suspend fun getQuotesByPage(page: Int) {
+    init {
+        GlobalScope.launch {
+            quotesFromDiary=quoteDatabase.diaryDao().getQuotes()
+            quotesFromDatabase=quoteDatabase.quoteDao().getQuotes()
+            getQuotesByPage(1)
+        }
+    }
+
+    //defining getters
+    fun getQuotesFromInternetLiveData():LiveData<QuoteList>{
+        return quotesFromInternet
+    }
+
+    fun getQuotesFromDatabaseLiveData():LiveData<List<Result>>{
+        return quotesFromDatabase
+    }
+
+    fun getQuotesFromDiaryLiveData():LiveData<List<MyQuote>>{
+        return quotesFromDiary
+    }
+
+
+    suspend fun getQuotesByPage(page: Int){
         if (NetworkUtils.isInternetAvailable(applicationContext)) {
             val quoteListResponse = quotesAPI.getQuotesbyPage(page)
             if (quoteListResponse != null && quoteListResponse.body() != null) {
@@ -34,18 +59,43 @@ class QuoteRepository(
         }
     }
 
-    //    Always keep primaryKey value as 0 to let it auto-regenerate
-    fun addInDB() {
+    //Adding new Quotes in databases
+    fun addQuoteInDiary(myQuote: MyQuote) {
         GlobalScope.launch {
-            quoteDatabase.quoteDao()
-                .addQuotes(Result(0, "yoyo", "", "This is Result QUote", "", "", "", 1))
+            quoteDatabase.diaryDao().insertQuote(myQuote)
         }
     }
 
-    fun addInDiary() {
+    fun addQuoteInDB(result: Result) {
         GlobalScope.launch {
-            quoteDatabase.diaryDao().insertQuote(MyQuote(0, "Consistency is Key", "~yash"))
+            quoteDatabase.quoteDao().addQuote(result)
         }
     }
 
+    //Delete Quote Queries in databases
+    fun deleteFromDiary(myQuote: MyQuote){
+        GlobalScope.launch {
+            quoteDatabase.diaryDao().deleteByPrimaryKey(myQuote.id)
+        }
+    }
+
+    fun deleteFromDB(result: Result){
+        GlobalScope.launch {
+            quoteDatabase.quoteDao().deleteByPrimaryKey(result.primaryId)
+        }
+    }
+
+
+    //Clearing Database Queries
+    fun clearDiary() {
+        GlobalScope.launch {
+            quoteDatabase.diaryDao().clearAllQuotes()
+        }
+    }
+
+    fun clearDB(){
+        GlobalScope.launch {
+            quoteDatabase.quoteDao().clearAllQuotes()
+        }
+    }
 }
