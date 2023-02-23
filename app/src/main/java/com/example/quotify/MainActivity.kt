@@ -2,6 +2,8 @@ package com.example.quotify
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.quotify.databinding.ActivityMainBinding
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         mainViewModel.getQuotesFromDiaryLiveData().observe(this,{
+            Log.d("check","update")
             mainViewModel.setquotesFromDiaryList(it)
             if(it!=null)
                 binding.showData.text=it.toString()
@@ -56,6 +59,14 @@ class MainActivity : AppCompatActivity() {
             addQuote()
         }
 
+        binding.prevButton.setOnClickListener {
+            Toast.makeText(this,"${mainViewModel.prevQuote().toString()}",Toast.LENGTH_SHORT).show()
+        }
+
+        binding.nextButton.setOnClickListener {
+            Toast.makeText(this,"${mainViewModel.nextQuote().toString()}",Toast.LENGTH_SHORT).show()
+        }
+
         binding.deleteButton.setOnClickListener {
             deleteQuote()
         }
@@ -70,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun deleteQuote() {
-        mainViewModel.delete()
+        mainViewModel.delete(mainViewModel.getCurrentQuote())
     }
 
     private fun addQuote() {

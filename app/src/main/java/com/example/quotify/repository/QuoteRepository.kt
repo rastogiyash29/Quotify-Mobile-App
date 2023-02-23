@@ -1,6 +1,8 @@
 package com.example.quotify.repository
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -73,9 +75,9 @@ class QuoteRepository(
     }
 
     //Delete Quote Queries in databases
-    fun deleteFromDiary(myQuote: MyQuote){
+    fun deleteFromDiary(result: Result){
         GlobalScope.launch {
-            quoteDatabase.diaryDao().deleteByPrimaryKey(myQuote.id)
+            quoteDatabase.diaryDao().deleteByPrimaryKey(result.primaryId)
         }
     }
 
