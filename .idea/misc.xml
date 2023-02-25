@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/splash_activity_bg_gradient.xml" value="0.1" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_splash.xml" value="0.21822916666666667" />
       </map>
     </option>
   </component>

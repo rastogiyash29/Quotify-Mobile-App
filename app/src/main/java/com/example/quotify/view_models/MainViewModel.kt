@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotify.models.Result
@@ -11,16 +12,14 @@ import com.example.quotify.models.MyQuote
 import com.example.quotify.models.QuoteList
 import com.example.quotify.repository.QuoteRepository
 import com.example.quotify.utils.NetworkUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 //Remember: LiveData only sets its content visible for its observers during its changeTime only
 //*****     Diff b/w MutableLiveData and LiveData is Mutable one has getValue and setValue while other one don't
 class MainViewModel(val repository: QuoteRepository, private var context: Context) :
     ViewModel() {
 
-    var mode = 2      //0 is online mode and 1 is offline mode 2 is diary mode
+    var mode = 0      //0 is online mode and 1 is offline mode 2 is diary mode
     private val totalModes = 3
 
     //Defining LiveDatas For Different Modes
@@ -32,7 +31,6 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
         quotesFromInternet = repository.getQuotesFromInternetLiveData()
         quotesFromDatabase = repository.getQuotesFromDatabaseLiveData()
         quotesFromDiary = repository.getQuotesFromDiaryLiveData()
-        switchModes()       //Setting online mode
     }
 
     //defining getters
@@ -64,14 +62,17 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
             }
             pageNumber++
         }
+        setLiveQuote(getCurrentQuote())
     }
 
     fun setquotesFromDatabaseList(list: List<Result>) {
         quotesFromDatabaseList = list
+        setFavouriteQuote(getCurrentQuote())
     }
 
     fun setquotesFromDiaryList(list: List<MyQuote>) {
         quotesFromDiaryList = list
+        setFavouriteQuote(getCurrentQuote())
     }
 
     //It Keeps Information of Pages Downloaded from Internet (Cache)
@@ -80,163 +81,159 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
     private var pointersArray = IntArray(3)
 
     //Adding logic for additions of quotes in databases in various modes
-    fun addQuote(result: Result) {
+    suspend fun addQuote(result: Result): Boolean {
         if (mode == 0) {
             //Will add new downloaded page from here
             Toast.makeText(context, "Addition in Internet", Toast.LENGTH_SHORT).show()
+            return false
         } else if (mode == 1) {
             repository.addQuoteInDB(result)
         } else {
             //To auto-regenerate PrimaryKey put its value=0
             repository.addQuoteInDiary(MyQuote(0, "Consistency in Diary", result.author))
         }
+        return true
     }
 
-    private fun addNewPageInOnlineMode() {
+    private suspend fun addNewPageInOnlineMode():Boolean {
         //Will add new downloaded page from here
         Toast.makeText(context, "Addition of New Page", Toast.LENGTH_SHORT).show()
         if (!downloadedPage.contains(pageNumber + 1)) {
-            viewModelScope.launch(Dispatchers.IO) {
-                repository.getQuotesByPage(pageNumber + 1)
-            }
+            val job = repository.getQuotesByPage(pageNumber + 1)
+            if(job)return true
         }
+        return false
     }
 
     //Testing Delete function
-    fun delete(result: Result) {
-        if(result.primaryId==-1)return
+    suspend fun delete(): Boolean {
+        var result = getCurrentQuote()
+        if (result.primaryId == -1) return false
+        Log.d("tag", "TO Delete ${result.toString()}  ${pointersArray[1]}  ${pointersArray[2]}")
         if (mode == 0) {
             Toast.makeText(context, "Deleting from Internet", Toast.LENGTH_SHORT).show()
+            return false
         } else if (mode == 1) {
             repository.deleteFromDB(result)
-            if(quotesFromDatabaseList!!.size-1==pointersArray[1])
-                pointersArray[1]--
-            if(pointersArray[1]<0)pointersArray[1]++
+            if (quotesFromDatabaseList!!.size > 1) {
+                if (pointersArray[1] == 0) {
+                    pointersArray[1]
+                } else {
+                    --pointersArray[1]
+                }
+            }
         } else if (mode == 2) {
             repository.deleteFromDiary(result)
-            if(quotesFromDiaryList!!.size-1==pointersArray[2])
-                pointersArray[2]--
-            if(pointersArray[2]<0)pointersArray[2]++
+            if (quotesFromDiaryList!!.size > 1) {
+                if (pointersArray[2] == 0) {
+                    pointersArray[2]
+                } else {
+                    --pointersArray[2]
+                }
+            }
         }
+        return true
     }
 
-    fun switchModes(): String {
-        mode = (mode + 1) % totalModes
-        if (mode == 0) {    //online mode
-            if (NetworkUtils.isInternetAvailable(context)) {
-                Toast.makeText(context, "${getCurrentQuote().toString()}", Toast.LENGTH_LONG).show()
-                if (quotesFromInternetList != null)
-                    return quotesFromInternetList.toString()
-                else return "Nope"
-            } else {
-                return switchModes()
-            }
-        } else if (mode == 1) {  //offline mode
-            Toast.makeText(context, "${getCurrentQuote().toString()}", Toast.LENGTH_SHORT).show()
-            return quotesFromDatabaseList.toString()
-        } else if (mode == 2) {  //diary mode
-            Toast.makeText(context, "${getCurrentQuote().toString()}", Toast.LENGTH_SHORT).show()
-            return quotesFromDiaryList.toString()
-        }
-        return ""
+    //Setting Different Modes
+    fun setLiveMode(): Boolean {
+        if (mode == 0) return false
+        mode = 0
+        setLiveQuote(getCurrentQuote())
+        return true
+    }
+
+    fun setFavouritesMode(): Boolean {
+        if (mode == 1) return false
+        mode = 1
+        setFavouriteQuote(getCurrentQuote())
+        return true
+    }
+
+    fun setDiaryMode(): Boolean {
+        if (mode == 2) return false
+        mode = 2
+        setDiaryQuote(getCurrentQuote())
+        return true
     }
 
     //It can clear quotes from Favourites and Dairy only
-    fun clearQuotes() {
+    suspend fun clearQuotes(): Boolean {
+        if (getCurrentQuote().primaryId == -1) return false
         if (mode == 0) {
             Toast.makeText(context, "Clearing Online data", Toast.LENGTH_SHORT).show()
+            return false
         } else if (mode == 1) {
-            pointersArray[1]=0
+            pointersArray[1] = 0
             repository.clearDB()
-        } else if (mode == 2)
-            pointersArray[2]=0
+        } else if (mode == 2) {
+            pointersArray[2] = 0
             repository.clearDiary()
+        }
+        return true
     }
 
     //NEXT and PREV button functionalities
-    //Result with -1 id means (No Add and Remove operation will be performed in current set Quote)
-    fun prevQuote(): Result {
-        if (mode == 0) {
-            if (quotesFromInternetList?.isEmpty() == false) {
-                if (pointersArray[0] > 0) {
-                    pointersArray[0]--
-                    return quotesFromInternetList[pointersArray[0]]
-                } else {
-                    //Do nothing, already first quote is set
-                }
-            } else {
-                return Result(-1, "", "~Device", "", "Device not connected to Internet", "", "", 1)
-            }
-        } else if (mode == 1) {
-            if (quotesFromDatabaseList?.isEmpty() == false) {
-                if (pointersArray[1] > 0) {
-                    pointersArray[1]--
-                    return quotesFromDatabaseList!![pointersArray[1]]
-                } else {
-                    //Do nothing, already first quote is set
-                }
-            } else {
-                return Result(-1, "", "~Favourites", "", "No Favourite Quote Available", "", "", 1)
-            }
-        } else if (mode == 2) {
-            if (quotesFromDiaryList?.isEmpty() == false) {
-                if (pointersArray[2] > 0) {
-                    pointersArray[2]--
-                    var myQuote = quotesFromDiaryList!![pointersArray[2]]
-                    return Result(myQuote.id, "", myQuote.author, "", myQuote.text, "", "", 1)
-                } else {
-                    //Do nothing, already first quote is set
-                }
-            } else {
-                return Result(-1, "", "~Diary", "", "No Diary Quote Available", "", "", 1)
-            }
-        }
-        return getCurrentQuote()
-    }
 
     //Result with -1 id means (No Add and Remove operation will be performed in current set Quote)
-    fun nextQuote(): Result {
+    suspend fun nextQuote(): Boolean {  //returns true only if new list added in Online mode
         if (mode == 0) {
             if (quotesFromInternetList?.isEmpty() == false) {
                 if (pointersArray[0] + 1 < quotesFromInternetList.size) {
                     pointersArray[0]++
-                    return quotesFromInternetList[pointersArray[0]]
+                    refreshCurrentQuote()
                 } else {
-                    //Try to Add new Quote in Online mode
-                    val oldsize=downloadedPage.size
-                    addNewPageInOnlineMode()
-                    if(downloadedPage.size>oldsize){
-                        return nextQuote()
+                    //Try to Add new Quotes Page in Online mode
+                    val job=addNewPageInOnlineMode()
+                    if(job){
+                        pointersArray[0]++
+                        return true
                     }
                 }
-            } else {
-                return Result(-1, "", "~Device", "", "Device not connected to Internet", "", "", 1)
             }
         } else if (mode == 1) {
             if (quotesFromDatabaseList?.isEmpty() == false) {
                 if (pointersArray[1] + 1 < quotesFromDatabaseList!!.size) {
                     pointersArray[1]++
-                    return quotesFromDatabaseList!![pointersArray[1]]
-                } else {
-                    //Do nothing, already last quote is set
+                    refreshCurrentQuote()
                 }
-            } else {
-                return Result(-1, "", "~Favourites", "", "No Favourite Quote Available", "", "", 1)
             }
         } else if (mode == 2) {
             if (quotesFromDiaryList?.isEmpty() == false) {
                 if (pointersArray[2] + 1 < quotesFromDiaryList!!.size) {
                     pointersArray[2]++
-                    var myQuote = quotesFromDiaryList!![pointersArray[2]]
-                    return Result(myQuote.id, "", myQuote.author, "", myQuote.text, "", "", 1)
-                } else {
-                    //Do nothing, already last quote is set
+                    refreshCurrentQuote()
                 }
-            } else {
-                return Result(-1, "", "~Diary", "", "No Diary Quote Available", "", "", 1)
             }
         }
-        return getCurrentQuote()
+        return false
+    }
+
+    //Result with -1 id means (No Add and Remove operation will be performed in current set Quote)
+    fun prevQuote(): Boolean {
+        if (mode == 0) {
+            if (quotesFromInternetList?.isEmpty() == false) {
+                if (pointersArray[0] > 0) {
+                    pointersArray[0]--
+                    refreshCurrentQuote()
+                }
+            }
+        } else if (mode == 1) {
+            if (quotesFromDatabaseList?.isEmpty() == false) {
+                if (pointersArray[1] > 0) {
+                    pointersArray[1]--
+                    refreshCurrentQuote()
+                }
+            }
+        } else if (mode == 2) {
+            if (quotesFromDiaryList?.isEmpty() == false) {
+                if (pointersArray[2] > 0) {
+                    pointersArray[2]--
+                    refreshCurrentQuote()
+                }
+            }
+        }
+        return false
     }
 
     //GetCurrent Quote functionalities for All modes
@@ -264,4 +261,39 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
         return Result(-1, "", "~Device", "", "Internal Code Error", "", "", 1)
     }
 
+    //Setting Live Quotes/Results for each mode ............ And also setters for these data
+    private var LiveQuoteMutable = MutableLiveData<Result>()
+    private var FavouriteQuoteMutable = MutableLiveData<Result>()
+    private var DiaryQuoteMutable = MutableLiveData<Result>()
+
+    val LiveQuote: LiveData<Result>
+        get() = LiveQuoteMutable
+
+    val FavouriteQuote: LiveData<Result>
+        get() = FavouriteQuoteMutable
+
+    val DiaryQuote: LiveData<Result>
+        get() = DiaryQuoteMutable
+
+    private fun setLiveQuote(result: Result) {
+        LiveQuoteMutable.postValue(result)
+    }
+
+    private fun setFavouriteQuote(result: Result) {
+        FavouriteQuoteMutable.postValue(result)
+    }
+
+    private fun setDiaryQuote(result: Result) {
+        DiaryQuoteMutable.postValue(result)
+    }
+
+    //Setting Refresh function for current Quote
+    fun refreshCurrentQuote() {
+        if (mode == 0)
+            setLiveQuote(getCurrentQuote())
+        else if (mode == 1)
+            setFavouriteQuote(getCurrentQuote())
+        else if (mode == 2)
+            setDiaryQuote(getCurrentQuote())
+    }
 }
