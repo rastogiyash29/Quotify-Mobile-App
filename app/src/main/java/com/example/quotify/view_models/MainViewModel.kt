@@ -23,9 +23,9 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
     private val totalModes = 3
 
     //Defining LiveDatas For Different Modes
-    private lateinit var quotesFromDiary: LiveData<List<MyQuote>>
-    private lateinit var quotesFromDatabase: LiveData<List<Result>>
-    private lateinit var quotesFromInternet: LiveData<QuoteList>
+    private var quotesFromDiary: LiveData<List<MyQuote>>
+    private var quotesFromDatabase: LiveData<List<Result>>
+    private var quotesFromInternet: LiveData<QuoteList>
 
     init {
         quotesFromInternet = repository.getQuotesFromInternetLiveData()
@@ -109,7 +109,6 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
     suspend fun delete(): Boolean {
         var result = getCurrentQuote()
         if (result.primaryId == -1) return false
-        Log.d("tag", "TO Delete ${result.toString()}  ${pointersArray[1]}  ${pointersArray[2]}")
         if (mode == 0) {
             Toast.makeText(context, "Deleting from Internet", Toast.LENGTH_SHORT).show()
             return false
@@ -189,6 +188,11 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
                         pointersArray[0]++
                         return true
                     }
+                }
+            }else if(NetworkUtils.isInternetAvailable(context)){    //If earlier Internet was inactive but now its active
+                val job=addNewPageInOnlineMode()
+                if(job){
+                    return true
                 }
             }
         } else if (mode == 1) {

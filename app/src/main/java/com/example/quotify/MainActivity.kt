@@ -51,8 +51,6 @@ class MainActivity : AppCompatActivity() {
         //Setting first mode
         binding.Mode.text = "Online Mode"
         setQuote()
-        hideProgressBar()
-
 
         //Setting onClick Listeners
         binding.addButton.setOnClickListener {

@@ -23,7 +23,7 @@ class SplashActivity : AppCompatActivity() {
             Log.d("loc->","At inside to loop")
             startActivity(intent)
             finish()
-        }, 2500)
+        }, 1)
 
         Log.d("loc->","At end of loop")
     }
