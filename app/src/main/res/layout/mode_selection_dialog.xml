@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:background="@drawable/mode_selection_dialog_bg">
+
+    <ImageView
+        android:id="@+id/onlineMode"
+        android:padding="10dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/globe"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/non_mode_bg"/>
+    
+    <ImageView
+        android:id="@+id/favouritesMode"
+        android:padding="10dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/heart"
+        app:layout_constraintTop_toBottomOf="@+id/onlineMode"
+        app:layout_constraintLeft_toLeftOf="@+id/onlineMode"
+        android:background="@drawable/non_mode_bg"
+        />
+
+    <ImageView
+        android:id="@+id/diaryMode"
+        android:padding="10dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/diary"
+        app:layout_constraintTop_toBottomOf="@+id/favouritesMode"
+        app:layout_constraintLeft_toLeftOf="@+id/favouritesMode"
+        android:background="@drawable/non_mode_bg"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

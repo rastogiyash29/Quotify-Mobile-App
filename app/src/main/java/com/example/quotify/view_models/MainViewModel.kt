@@ -19,7 +19,11 @@ import kotlinx.coroutines.*
 class MainViewModel(val repository: QuoteRepository, private var context: Context) :
     ViewModel() {
 
-    var mode = 0      //0 is online mode and 1 is offline mode 2 is diary mode
+    private var mode = 0      //0 is online mode and 1 is offline mode 2 is diary mode
+    fun getMode():Int{
+        return mode
+    }
+
     private val totalModes = 3
 
     //Defining LiveDatas For Different Modes

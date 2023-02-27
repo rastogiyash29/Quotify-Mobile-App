@@ -1,32 +1,32 @@
 package com.example.quotify
 
+import android.app.Dialog
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.view.WindowManager
-import android.widget.Toast
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import com.example.quotify.databinding.ActivityMainBinding
+import com.example.quotify.databinding.ActivityMainTempBinding
 import com.example.quotify.models.Result
 import com.example.quotify.view_models.MainViewModel
 import com.example.quotify.view_models.MainViewModelFactory
 import kotlinx.coroutines.*
-import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
-import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
-    lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainTempBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main_temp)
         val repository = (application as QuoteApplication).quoteRepository
         //do entry of QuoteApplication in Manifest file also
 
@@ -49,11 +49,10 @@ class MainActivity : AppCompatActivity() {
         })
 
         //Setting first mode
-        binding.Mode.text = "Online Mode"
-        setQuote()
+        setOnlineMode()
 
         //Setting onClick Listeners
-        binding.addButton.setOnClickListener {
+        binding.addFavouriteButton.setOnClickListener {
             //Always launch on Main thread of UI interaction takes place.
             GlobalScope.launch(Dispatchers.Main) {
                 addQuote()
@@ -66,24 +65,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.clearButton.setOnClickListener {
+        binding.clearAllButton.setOnClickListener {
             GlobalScope.launch(Dispatchers.Main) {
                 clearAllQuotes()
             }
         }
 
-        binding.switchButton.setOnClickListener {
-            switchMode()
+        binding.selectMode.setOnClickListener {
+            startModeSelectionDialog()
         }
 
-        binding.prevButton.setOnClickListener {
+        binding.PreviousButton.setOnClickListener {
             prevQuote()
         }
 
-        binding.nextButton.setOnClickListener {
+        binding.NextButton.setOnClickListener {
             GlobalScope.launch(Dispatchers.Main) {
                 nextQuote()
             }
+        }
+
+        binding.shareButton.setOnClickListener {
+            onShare()
         }
 
         //Setting Current Quote Live Data Observers
@@ -135,24 +138,58 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun switchMode() {
-        showProgressBar()
-        val job: Boolean
-        if (mainViewModel.mode == 0) {
-            binding.Mode.text = "Offline DB Mode"
-            job = mainViewModel.setFavouritesMode()
-        } else if (mainViewModel.mode == 1) {
-            binding.Mode.text = "Diary Mode"
-            job = mainViewModel.setDiaryMode()
-        } else if (mainViewModel.mode == 2) {
-            binding.Mode.text = "Online Mode"
-            job = mainViewModel.setLiveMode()
-        } else
-            job = false
-        if (!job) {
-            hideProgressBar()
-            return
+    //Starting Mode Selection dialog
+    private fun startModeSelectionDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.mode_selection_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
+        val onlineModeBtn=dialog.findViewById<ImageView>(R.id.onlineMode)
+        val favModeBtn=dialog.findViewById<ImageView>(R.id.favouritesMode)
+        val diaryModeBtn=dialog.findViewById<ImageView>(R.id.diaryMode)
+
+        onlineModeBtn.setOnClickListener {
+            setOnlineMode()
+            dialog.dismiss()
         }
+        favModeBtn.setOnClickListener {
+            setFavouriteMode()
+            dialog.dismiss()
+        }
+        diaryModeBtn.setOnClickListener {
+            setDiaryMode()
+            dialog.dismiss()
+        }
+    }
+
+    private fun setOnlineMode(){
+        val set=mainViewModel.setLiveMode()
+        if(set){
+            binding.selectMode.setImageResource(R.drawable.globe)
+            setQuote()
+        }
+        Log.d("tag","online mode")
+    }
+
+    private fun setFavouriteMode(){
+        val set=mainViewModel.setFavouritesMode()
+        if(set){
+            binding.selectMode.setImageResource(R.drawable.heart)
+            setQuote()
+        }
+        Log.d("tag","Fav mode")
+    }
+
+    private fun setDiaryMode(){
+        val set=mainViewModel.setDiaryMode()
+        if(set){
+            binding.selectMode.setImageResource(R.drawable.diary)
+            setQuote()
+        }
+        Log.d("tag","Diary mode")
     }
 
     private suspend fun nextQuote() {
@@ -189,7 +226,9 @@ class MainActivity : AppCompatActivity() {
 
     //Setting current Quote in showtext
     private fun setQuote() {
-        binding.showData.text = mainViewModel.getCurrentQuote().toString()
+        var currentQuoteResult=mainViewModel.getCurrentQuote()
+        binding.QuoteAuthor.text="~${currentQuoteResult.author} (${currentQuoteResult.primaryId})"
+        binding.QuoteText.text="${currentQuoteResult.content}"
     }
 
     //Disable and Enable Functions of UserInterface
@@ -203,4 +242,13 @@ class MainActivity : AppCompatActivity() {
     fun AppCompatActivity.unblockInput() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
+
+    //Adding share Button Functionality
+    fun onShare() {
+        val intent= Intent(Intent.ACTION_SEND)
+        intent.setType("text/plain")
+        intent.putExtra(Intent.EXTRA_TEXT,"${mainViewModel.getCurrentQuote().content} \n~${mainViewModel.getCurrentQuote().author}")
+        startActivity(intent)
+    }
+
 }
