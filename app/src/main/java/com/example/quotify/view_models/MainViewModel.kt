@@ -86,15 +86,16 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
 
     //Adding logic for additions of quotes in databases in various modes
     suspend fun addQuote(result: Result): Boolean {
+        if(result.primaryId==-1)return false
         if (mode == 0) {
             //Will add new downloaded page from here
-            Toast.makeText(context, "Addition in Internet", Toast.LENGTH_SHORT).show()
-            return false
-        } else if (mode == 1) {
             repository.addQuoteInDB(result)
+            Toast.makeText(context, "Added to Favourites", Toast.LENGTH_SHORT).show()
+        } else if (mode == 1) {
+            Toast.makeText(context, "Cannot create in Favourites", Toast.LENGTH_SHORT).show()
         } else {
             //To auto-regenerate PrimaryKey put its value=0
-            repository.addQuoteInDiary(MyQuote(0, "Consistency in Diary", result.author))
+            repository.addQuoteInDiary(MyQuote(0, result.content, result.author))
         }
         return true
     }

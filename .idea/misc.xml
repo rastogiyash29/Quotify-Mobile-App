@@ -10,8 +10,11 @@
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/button_normal_bg_pink.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/button_pressed_bg.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/button_pressed_bg_pink.xml" value="0.1275" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.1275" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_check_box_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_chevron_left_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_chevron_right_24.xml" value="0.1275" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_clear_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_format_quote_24.xml" value="0.146" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_share_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1275" />
@@ -22,8 +25,9 @@
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/quote_card_bg.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/splash_activity_bg_gradient.xml" value="0.1" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_main.xml" value="0.2" />
-        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_main_temp.xml" value="0.13819444444444445" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_main_temp.xml" value="0.264" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_splash.xml" value="0.21822916666666667" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/add_quote_dialog.xml" value="0.2" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/mode_selection_dialog.xml" value="0.2171875" />
       </map>
     </option>

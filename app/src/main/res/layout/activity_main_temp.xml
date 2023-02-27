@@ -113,6 +113,9 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/shareButton"
             android:layout_width="wrap_content"
@@ -126,18 +129,17 @@
             app:layout_constraintTop_toBottomOf="@+id/QuoteCard"
             app:srcCompat="@drawable/ic_baseline_share_24" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <ImageView
             android:id="@+id/addFavouriteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="24dp"
-            android:clickable="true"
-            android:foregroundTint="#dc2430"
-            app:backgroundTint="#ff5e62"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             app:layout_constraintBottom_toBottomOf="@+id/QuoteCard"
             app:layout_constraintRight_toLeftOf="@+id/shareButton"
             app:layout_constraintTop_toBottomOf="@+id/QuoteCard"
-            app:srcCompat="@drawable/add_fav_icon" />
+            android:layout_marginRight="24dp"
+            android:src="@drawable/add_to_fav_icon_new"
+            android:elevation="10dp"
+            />
 
         <TextView
             android:id="@+id/PreviousButton"

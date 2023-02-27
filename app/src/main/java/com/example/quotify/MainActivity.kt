@@ -10,7 +10,10 @@ import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.quotify.databinding.ActivityMainTempBinding
@@ -54,8 +57,15 @@ class MainActivity : AppCompatActivity() {
         //Setting onClick Listeners
         binding.addFavouriteButton.setOnClickListener {
             //Always launch on Main thread of UI interaction takes place.
-            GlobalScope.launch(Dispatchers.Main) {
-                addQuote()
+            if(mainViewModel.getMode()==0){
+                GlobalScope.launch(Dispatchers.Main) {
+                    addQuote(mainViewModel.getCurrentQuote())
+                }
+            }else if(mainViewModel.getMode()==1){
+                //do nothing
+                Toast.makeText(this,"Cannot create in favourites",Toast.LENGTH_SHORT).show()
+            }else if(mainViewModel.getMode()==2){   //Diary mode
+                startAddQuoteDialog()
             }
         }
 
@@ -107,11 +117,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     //Functionalities Implementations
-    private suspend fun addQuote() {
+    private suspend fun addQuote(result: Result) {
         showProgressBar()
         withContext(Dispatchers.Main) {
             val job =
-                mainViewModel.addQuote(Result(0, "", "~yash", "", "Consistent in DB", "", "", 1))
+                mainViewModel.addQuote(result)
             if (!job) {
                 hideProgressBar()
             }
@@ -147,9 +157,9 @@ class MainActivity : AppCompatActivity() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
 
-        val onlineModeBtn=dialog.findViewById<ImageView>(R.id.onlineMode)
-        val favModeBtn=dialog.findViewById<ImageView>(R.id.favouritesMode)
-        val diaryModeBtn=dialog.findViewById<ImageView>(R.id.diaryMode)
+        val onlineModeBtn = dialog.findViewById<ImageView>(R.id.onlineMode)
+        val favModeBtn = dialog.findViewById<ImageView>(R.id.favouritesMode)
+        val diaryModeBtn = dialog.findViewById<ImageView>(R.id.diaryMode)
 
         onlineModeBtn.setOnClickListener {
             setOnlineMode()
@@ -165,32 +175,83 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setOnlineMode(){
-        val set=mainViewModel.setLiveMode()
-        if(set){
+    private fun setOnlineMode() {
+        val set = mainViewModel.setLiveMode()
+        if (set) {
+            binding.AppName.text="QuotesNet"
             binding.selectMode.setImageResource(R.drawable.globe)
+            binding.addFavouriteButton.setImageResource(R.drawable.add_to_fav_icon_new)
             setQuote()
         }
-        Log.d("tag","online mode")
+        Log.d("tag", "online mode")
     }
 
-    private fun setFavouriteMode(){
-        val set=mainViewModel.setFavouritesMode()
-        if(set){
+    private fun setFavouriteMode() {
+        val set = mainViewModel.setFavouritesMode()
+        if (set) {
+            binding.AppName.text="Favourites"
             binding.selectMode.setImageResource(R.drawable.heart)
+            binding.addFavouriteButton.setImageResource(R.drawable.add_quote_icon)
             setQuote()
         }
-        Log.d("tag","Fav mode")
+        Log.d("tag", "Fav mode")
     }
 
-    private fun setDiaryMode(){
-        val set=mainViewModel.setDiaryMode()
-        if(set){
+    private fun setDiaryMode() {
+        val set = mainViewModel.setDiaryMode()
+        if (set) {
+            binding.AppName.text="My Diary"
             binding.selectMode.setImageResource(R.drawable.diary)
+            binding.addFavouriteButton.setImageResource(R.drawable.add_quote_icon)
             setQuote()
         }
-        Log.d("tag","Diary mode")
+        Log.d("tag", "Diary mode")
     }
+
+    //Setting Add Quote Dialog
+    private fun startAddQuoteDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.add_quote_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val width = (resources.displayMetrics.widthPixels * 0.90).toInt()
+        val height = (resources.displayMetrics.heightPixels * 0.70).toInt()
+        dialog.window?.setLayout(width, height)
+
+        val cancelBtn = dialog.findViewById<ImageView>(R.id.cancelBtn)
+        val saveBtn = dialog.findViewById<Button>(R.id.saveBtn)
+        val quoteText = dialog.findViewById<EditText>(R.id.quoteInput)
+        val authorText = dialog.findViewById<EditText>(R.id.authorInput)
+
+        cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        saveBtn.setOnClickListener {
+            if (quoteText.text.isNotEmpty() && authorText.text.isNotEmpty()) {
+                GlobalScope.launch(Dispatchers.Main) {
+                    addQuote(
+                        Result(
+                            0,
+                            "",
+                            authorText.text.toString(),
+                            "",
+                            quoteText.text.toString(),
+                            "",
+                            "",
+                            1
+                        )
+                    )
+                }
+                dialog.dismiss()
+            } else {
+                Toast.makeText(this, "Enter valid quote and author", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialog.show()
+    }
+
 
     private suspend fun nextQuote() {
         showProgressBar()
@@ -226,9 +287,9 @@ class MainActivity : AppCompatActivity() {
 
     //Setting current Quote in showtext
     private fun setQuote() {
-        var currentQuoteResult=mainViewModel.getCurrentQuote()
-        binding.QuoteAuthor.text="~${currentQuoteResult.author} (${currentQuoteResult.primaryId})"
-        binding.QuoteText.text="${currentQuoteResult.content}"
+        var currentQuoteResult = mainViewModel.getCurrentQuote()
+        binding.QuoteAuthor.text = "~${currentQuoteResult.author} (${currentQuoteResult.primaryId})"
+        binding.QuoteText.text = "${currentQuoteResult.content}"
     }
 
     //Disable and Enable Functions of UserInterface
@@ -245,9 +306,12 @@ class MainActivity : AppCompatActivity() {
 
     //Adding share Button Functionality
     fun onShare() {
-        val intent= Intent(Intent.ACTION_SEND)
+        val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
-        intent.putExtra(Intent.EXTRA_TEXT,"${mainViewModel.getCurrentQuote().content} \n~${mainViewModel.getCurrentQuote().author}")
+        intent.putExtra(
+            Intent.EXTRA_TEXT,
+            "${mainViewModel.getCurrentQuote().content} \n~${mainViewModel.getCurrentQuote().author}"
+        )
         startActivity(intent)
     }
 
