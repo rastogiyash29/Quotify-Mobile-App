@@ -127,7 +127,7 @@ class MainViewModel(val repository: QuoteRepository, private var context: Contex
                 }
             }
         } else if (mode == 2) {
-            repository.deleteFromDiary(result)
+//            repository.deleteFromDiary(result)
             if (quotesFromDiaryList!!.size > 1) {
                 if (pointersArray[2] == 0) {
                     pointersArray[2]

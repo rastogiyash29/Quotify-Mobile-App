@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.example.quotify.activities.OnlineQuotesActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -15,7 +16,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         //creating intent
-        var intent=Intent(this,MainActivity::class.java)
+        var intent=Intent(this,OnlineQuotesActivity::class.java)
 
         Log.d("loc->","At top to loop")
 
@@ -23,7 +24,7 @@ class SplashActivity : AppCompatActivity() {
             Log.d("loc->","At inside to loop")
             startActivity(intent)
             finish()
-        }, 2500)
+        }, 2000)
 
         Log.d("loc->","At end of loop")
     }

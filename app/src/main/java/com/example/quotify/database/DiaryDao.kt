@@ -22,9 +22,9 @@ interface DiaryDao {
     @Query("DELETE FROM my_quotes_table")
     suspend fun clearAllQuotes()
 
-    @Query("SELECT * FROM my_quotes_table")
-    suspend fun getQuotesList():List<MyQuote>
-
     @Query("DELETE FROM my_quotes_table WHERE id = :primaryKey")
     suspend fun deleteByPrimaryKey(primaryKey:Int)
+
+    @Query("UPDATE my_quotes_table SET text = :newText , author = :newAuthor WHERE id = :primaryKey")
+    suspend fun updateByPrimaryKey(primaryKey:Int,newText:String,newAuthor:String)
 }

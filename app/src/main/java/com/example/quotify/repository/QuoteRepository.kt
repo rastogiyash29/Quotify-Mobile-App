@@ -35,7 +35,7 @@ class QuoteRepository(
         GlobalScope.launch {
             quotesFromDiary = quoteDatabase.diaryDao().getQuotes()
             quotesFromDatabase = quoteDatabase.quoteDao().getQuotes()
-            getQuotesByPage(1)
+//            getQuotesByPage(1)
         }
     }
 
@@ -58,6 +58,7 @@ class QuoteRepository(
             val quoteListResponse = quotesAPI.getQuotesbyPage(page)
             if (quoteListResponse != null && quoteListResponse.body() != null) {
                 quotesLiveData.postValue(quoteListResponse.body())
+                Log.d("tag","added on page-> ${quoteListResponse.body()!!.page}")
                 return true
             }
         }
@@ -73,9 +74,14 @@ class QuoteRepository(
         quoteDatabase.quoteDao().addQuote(result)
     }
 
+    //Edit quote in Diary
+    suspend fun editInDiary(primaryKey:Int,newText:String,newAuthor:String){
+        quoteDatabase.diaryDao().updateByPrimaryKey(primaryKey,newText,newAuthor)
+    }
+
     //Delete Quote Queries in databases
-    suspend fun deleteFromDiary(result: Result) {
-        quoteDatabase.diaryDao().deleteByPrimaryKey(result.primaryId)
+    suspend fun deleteFromDiary(myQuote: MyQuote) {
+        quoteDatabase.diaryDao().deleteByPrimaryKey(myQuote.id)
     }
 
     suspend fun deleteFromDB(result: Result) {
