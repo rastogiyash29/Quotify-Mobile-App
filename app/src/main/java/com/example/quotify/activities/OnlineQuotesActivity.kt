@@ -18,8 +18,6 @@ import com.example.quotify.R
 import com.example.quotify.adapters.ViewPagerAdapterOnlineQuotes
 import com.example.quotify.databinding.ActivityOnlineQuotesBinding
 import com.example.quotify.models.Result
-import com.example.quotify.view_models.MainViewModel
-import com.example.quotify.view_models.MainViewModelFactory
 import com.example.quotify.view_models.ViewModelFactoryOnlineQuotes
 import com.example.quotify.view_models.ViewModelOnlineQuotes
 import kotlinx.coroutines.*
@@ -76,7 +74,6 @@ class OnlineQuotesActivity : AppCompatActivity(), ViewPagerAdapterOnlineQuotes.A
             if (viewModelOnlineQuote.quotesFromInternetList.isEmpty() ||
                 binding.pagerOn.currentItem == viewModelOnlineQuote.quotesFromInternetList.size-1
             ){
-                Toast.makeText(this, "NEXT Clicked", Toast.LENGTH_SHORT).show()
                 //Trying to add newPageInOnlineMode
                 GlobalScope.launch(Dispatchers.Main) {
                     addNewQuotes()

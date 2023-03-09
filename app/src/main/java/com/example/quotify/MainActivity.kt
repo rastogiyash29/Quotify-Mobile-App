@@ -1,31 +1,14 @@
 package com.example.quotify
 
-import android.app.Dialog
-import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
-import android.util.Log
-import android.view.View
-import android.view.Window
-import android.view.WindowManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import com.example.quotify.databinding.ActivityMainTempBinding
-import com.example.quotify.models.Result
-import com.example.quotify.view_models.MainViewModel
-import com.example.quotify.view_models.MainViewModelFactory
 import kotlinx.coroutines.*
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var mainViewModel: MainViewModel
+//    lateinit var mainViewModel: MainViewModel
     lateinit var binding: ActivityMainTempBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

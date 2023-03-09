@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/quotebook_user_activity_bg"
+        tools:context=".activities.ActivityUser"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/upperHalf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:background="@drawable/quotebook_curve_borders_bottom"
+            android:padding="40dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profilePhoto"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
+                app:civ_border_width="8dp"
+                app:civ_border_color="#004e92"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/displayName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/quotebook_curve_borders"
+                android:gravity="center"
+                android:padding="20dp"
+                android:textColor="#0C300C"
+                android:textSize="35sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profilePhoto"
+                android:text="Select UserName"
+                android:fontFamily="@font/satisfy_regular"
+                android:layout_marginTop="40dp"
+                android:maxLines="1"
+                android:scrollbars = "vertical"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/upperHalf"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/emailHeading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="Email Id: "
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/emailTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/quotebook_thinborders"
+                android:gravity="center"
+                android:textColor="#011B4B"
+                android:textSize="20sp"
+                app:layout_constraintLeft_toRightOf="@+id/userNameHeading"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/emailHeading"
+                tools:text="abc@gmail.com"
+                android:maxLines="2"
+                android:scrollbars = "vertical"/>
+
+            <TextView
+                android:id="@+id/userNameHeading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="UserName: "
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/emailTV" />
+
+            <TextView
+                android:id="@+id/userNameTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/quotebook_thinborders"
+                android:gravity="center"
+                android:textColor="#011B4B"
+                android:textSize="20sp"
+                app:layout_constraintLeft_toRightOf="@+id/userNameHeading"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userNameHeading"
+                tools:text="ABC"
+                android:maxLines="2"
+                android:scrollbars = "vertical"/>
+
+            <Button
+                android:id="@+id/logOutBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#6BEFF7"
+                android:textColor="#032145"
+                android:text="Logout"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userNameTV" />
+
+            <Button
+                android:id="@+id/selectUserNameBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Select User Name"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/logOutBtn"
+                android:backgroundTint="#E91E63"
+                android:textColor="#FFFFFF"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

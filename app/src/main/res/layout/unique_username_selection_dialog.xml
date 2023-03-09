@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:paddingLeft="40dp"
+    android:paddingRight="40dp"
+    android:background="@drawable/quotebook_select_username_dialog">
+
+    <TextView
+        android:id="@+id/heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="Select UserName"
+        android:textSize="20sp"
+        android:textColor="#111462"
+        android:gravity="center"
+        android:padding="5dp"
+        android:fontFamily="sans-serif"
+        />
+
+    <EditText
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:id="@+id/fillUserName"
+        android:textSize="20sp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/heading"
+        android:hint="Enter username"
+        android:textColor="#022ABC"
+        android:textColorHint="#714D4D4D"
+        android:background="#88DEF8E7"
+        android:singleLine="true"
+        android:scrollHorizontally="true"
+        />
+
+    <Button
+        android:id="@+id/createUserNameBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/fillUserName"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="25dp"
+        android:backgroundTint="#224CB5"
+        android:textColor="#FFFFFF"
+        android:text="Create UserName"
+        />
+
+    <TextView
+        android:id="@+id/usernameStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/createUserNameBtn"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="select your unique username"
+        android:textColor="#022ABC"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

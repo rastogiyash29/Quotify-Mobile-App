@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "608503934115",
+    "project_id": "quotify-72bc2",
+    "storage_bucket": "quotify-72bc2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608503934115:android:75a8e08e3b97fb3ead6316",
+        "android_client_info": {
+          "package_name": "com.example.quotify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608503934115-1dsi7uhgma32iuevt3rstgpeq6ch76co.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.quotify",
+            "certificate_hash": "70d7fd7124e573ade052e76b527220c63b5f2b11"
+          }
+        },
+        {
+          "client_id": "608503934115-aj1i10riothc1oduhtm9r4ei04gtls71.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO0Q5M1ZHRtr4tCZWuqHM1tWeFzbbl6OQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608503934115-aj1i10riothc1oduhtm9r4ei04gtls71.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
