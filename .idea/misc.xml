@@ -15,7 +15,9 @@
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_chevron_left_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_chevron_right_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_clear_24.xml" value="0.1275" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.1285" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_format_quote_24.xml" value="0.146" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_menu_24.xml" value="0.1285" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_share_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/main_bg_gradient.xml" value="0.1275" />
@@ -31,6 +33,7 @@
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/quotebook_thinborders.xml" value="0.1285" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/quotebook_user_activity_bg.xml" value="0.1285" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/splash_activity_bg_gradient.xml" value="0.1" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_create_post.xml" value="0.2" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_diary_quotes.xml" value="0.176" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_favourites_quotes.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_login.xml" value="0.2" />
@@ -39,9 +42,11 @@
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_online_quotes.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_splash.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_temp.xml" value="0.21822916666666667" />
-        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_user.xml" value="0.176" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_user.xml" value="0.3106646058732612" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_user_menu_dialog.xml" value="0.264" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/add_quote_dialog.xml" value="0.2" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/mode_selection_dialog.xml" value="0.2171875" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/post_layout.xml" value="0.2" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/quote_card.xml" value="0.20104166666666667" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/quote_card_diary.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/quote_card_favourites.xml" value="0.21822916666666667" />

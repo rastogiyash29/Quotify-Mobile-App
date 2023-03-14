@@ -1,23 +1,24 @@
 package com.example.quotify.activities
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.example.quotify.R
+import com.example.quotify.database.PostDao
 import com.example.quotify.database.QuoteBookDatabase
 import com.example.quotify.database.UserDao
 import com.example.quotify.databinding.ActivityUserBinding
@@ -35,14 +36,19 @@ import kotlinx.coroutines.tasks.await
 
 class ActivityUser : AppCompatActivity() {
     lateinit var quoteBookDatabase: QuoteBookDatabase
+    lateinit var postDao: PostDao
 
     //Here its guarantee that firebase auth will be Non-Null
     lateinit var auth: FirebaseAuth
     lateinit var binding: ActivityUserBinding
 
+    private var userExists = false
+    private var serverBusy = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_user)
+
+        postDao = PostDao()
 
         quoteBookDatabase = QuoteBookDatabase
         auth = Firebase.auth
@@ -55,6 +61,13 @@ class ActivityUser : AppCompatActivity() {
 
         binding.selectUserNameBtn.setOnClickListener {
             checkUserExistence(auth.currentUser!!)
+        }
+
+        binding.menu.setOnClickListener {
+            if (userExists)
+                openMenuDialog()
+            else
+                Toast.makeText(this, "Firstly create userName", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -72,6 +85,7 @@ class ActivityUser : AppCompatActivity() {
                 if (userTask.exists()) {
                     //User Already Exist //Resume all functionalities here
                     Log.d("tag", "Found User exists")
+                    userExists = true
                     setUI()
                 } else {
                     startUserNameSelectionDialog()
@@ -128,7 +142,7 @@ class ActivityUser : AppCompatActivity() {
     private suspend fun addNewUser(userName: String) {
         var myPostsContainer: String
         try {
-            val newPostsContainerTask = UserDao().getNewPostsContainer().await()
+            val newPostsContainerTask = postDao.getNewPostContainer().await()
             myPostsContainer = newPostsContainerTask.id
         } catch (e: Exception) {
             binding.displayName.text = "Try Again Creating Unique USERNAME !!"
@@ -151,6 +165,7 @@ class ActivityUser : AppCompatActivity() {
                     QuoteBookDatabase.getUserDao().addUser(currUser).addOnCompleteListener(this) {
                         if (it.isSuccessful) {
                             setUI()
+                            userExists = true
                         } else {
                             Toast.makeText(
                                 this,
@@ -195,6 +210,77 @@ class ActivityUser : AppCompatActivity() {
                 unblockInput()
             }
     }
+
+    private fun openMenuDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.activity_user_menu_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
+        val homeBtn = dialog.findViewById<Button>(R.id.homeBtn)
+        val createPostBtn = dialog.findViewById<Button>(R.id.createPostBtn)
+        val myPostsBtn = dialog.findViewById<Button>(R.id.myPostsBtn)
+
+        homeBtn.setOnClickListener {
+            Toast.makeText(this, "Home Btn Functionalities not added", Toast.LENGTH_SHORT).show()
+        }
+
+        createPostBtn.setOnClickListener {
+            if (!serverBusy) {
+                openCreatePostActivityForResult()
+                dialog.dismiss()
+            } else
+                Toast.makeText(this, "Server is busy creating another Post", Toast.LENGTH_SHORT)
+                    .show()
+        }
+
+        myPostsBtn.setOnClickListener {
+            Toast.makeText(this, "MyPosts Btn Functionalities not added", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun openCreatePostActivityForResult() {
+        val intent = Intent(this, CreatePostActivity::class.java)
+        resultLauncher.launch(intent)
+    }
+
+    var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // There are no request codes
+                val data: Intent = result.data!!
+                val imageUri: String = data.getStringExtra("imageUri")!!
+                val postText: String = data.getStringExtra("postText")!!
+
+                GlobalScope.launch(Dispatchers.Main) {
+                    createPost(postText, imageUri)
+                }
+
+                Toast.makeText(
+                    this@ActivityUser,
+                    "uri->${imageUri}  text->${postText}",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            } else {
+                Toast.makeText(this, "Retured Without Creating Post", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    private suspend fun createPost(postText: String, imageUri: String) {
+        serverBusy = true
+        Toast.makeText(this, "Creating Post", Toast.LENGTH_SHORT).show()
+        try {
+            postDao.createPost(postText, imageUri)
+            Toast.makeText(this, "Post Creation Successful", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Post Creation failed", Toast.LENGTH_SHORT).show()
+        }
+        serverBusy = false
+    }
+
 
     //Disable and Enable Functions of UserInterface
     private fun AppCompatActivity.blockInput() {
