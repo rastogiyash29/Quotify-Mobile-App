@@ -28,6 +28,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:background="#FFFFFF"
+            android:inputType="textMultiLine"
+            android:maxLines="2"
+            android:isScrollContainer="true"
             app:layout_constraintTop_toBottomOf="@+id/heading">
 
             <TextView
@@ -45,13 +48,17 @@
                 android:id="@+id/postTextET"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:hint="What do you want to talk about"
-                android:inputType="text"
-                android:maxLines="2"
+                android:textColorHint="#9A9A9A"
+                app:layout_constraintRight_toRightOf="@id/textLayout"
                 android:textColor="#0E0E0E"
+                android:gravity="top"
+                android:textSize="17sp"
+                android:minLines="2"
+                android:maxLines="2"
                 app:layout_constraintLeft_toRightOf="@+id/textHeading"
-                app:layout_constraintTop_toTopOf="@id/textHeading" />
+                app:layout_constraintTop_toTopOf="@id/textHeading"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

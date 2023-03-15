@@ -15,9 +15,11 @@
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_chevron_left_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_chevron_right_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_clear_24.xml" value="0.1275" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.1285" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.1285" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_format_quote_24.xml" value="0.146" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_menu_24.xml" value="0.1285" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.1285" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_baseline_share_24.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1275" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/drawable/main_bg_gradient.xml" value="0.1275" />
@@ -36,6 +38,7 @@
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_create_post.xml" value="0.2" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_diary_quotes.xml" value="0.176" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_favourites_quotes.xml" value="0.21822916666666667" />
+        <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_home_posts_viewer.xml" value="0.2" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_login.xml" value="0.2" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/shiva/AndroidStudioProjects/Quotify/app/src/main/res/layout/activity_main_temp.xml" value="0.264" />

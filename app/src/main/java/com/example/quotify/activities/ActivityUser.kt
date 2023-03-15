@@ -224,7 +224,10 @@ class ActivityUser : AppCompatActivity() {
         val myPostsBtn = dialog.findViewById<Button>(R.id.myPostsBtn)
 
         homeBtn.setOnClickListener {
-            Toast.makeText(this, "Home Btn Functionalities not added", Toast.LENGTH_SHORT).show()
+            val intentToHome = Intent(this, HomePostsViewer::class.java)
+            intentToHome.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intentToHome)
+            dialog.dismiss()
         }
 
         createPostBtn.setOnClickListener {
@@ -257,13 +260,6 @@ class ActivityUser : AppCompatActivity() {
                 GlobalScope.launch(Dispatchers.Main) {
                     createPost(postText, imageUri)
                 }
-
-                Toast.makeText(
-                    this@ActivityUser,
-                    "uri->${imageUri}  text->${postText}",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
             } else {
                 Toast.makeText(this, "Retured Without Creating Post", Toast.LENGTH_SHORT).show()
             }
@@ -280,7 +276,6 @@ class ActivityUser : AppCompatActivity() {
         }
         serverBusy = false
     }
-
 
     //Disable and Enable Functions of UserInterface
     private fun AppCompatActivity.blockInput() {
