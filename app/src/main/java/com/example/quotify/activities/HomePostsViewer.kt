@@ -7,23 +7,25 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.quotify.R
-import com.example.quotify.adapters.PostAdapter
-import com.example.quotify.database.IPostInterface
 import com.example.quotify.database.PostDao
 import com.example.quotify.databinding.ActivityHomePostsViewerBinding
 import com.example.quotify.models.Post
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.firebase.firestore.Query
+import com.example.quotify.testing.RecyclerViewAdapter
+import com.example.quotify.view_models.ViewModelFactoryHomePosts
+import com.example.quotify.view_models.ViewModelHomePosts
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class HomePostsViewer : AppCompatActivity(), IPostInterface {
+class HomePostsViewer : AppCompatActivity(), RecyclerViewAdapter.AdapterCallback {
 
-    private lateinit var adapter: PostAdapter
+
+    private lateinit var viewModelHomePosts: ViewModelHomePosts
+    private lateinit var recyclerViewAdapter: RecyclerViewAdapter
+
     private lateinit var binding: ActivityHomePostsViewerBinding
     private lateinit var postDao: PostDao
 
@@ -45,9 +47,14 @@ class HomePostsViewer : AppCompatActivity(), IPostInterface {
                     .show()
         }
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            GlobalScope.launch(Dispatchers.Main) {
+                refreshPosts()
+            }
+        }
+
         postDao = PostDao()
         setUpRecyclerView()
-        adapter.startListening()
     }
 
     //Create Post Part
@@ -92,28 +99,45 @@ class HomePostsViewer : AppCompatActivity(), IPostInterface {
     }
 
     private fun setUpRecyclerView() {
-        val postCollection = postDao.postCollection
-        val query = postCollection.orderBy("text", Query.Direction.DESCENDING)
-        val recyclerViewOptions =
-            FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post::class.java).build()
-        adapter = PostAdapter(recyclerViewOptions,this)
+        viewModelHomePosts =
+            ViewModelProvider(
+                this,
+                ViewModelFactoryHomePosts(
+                )
+            ).get(
+                ViewModelHomePosts::class.java
+            )
+
+        recyclerViewAdapter = RecyclerViewAdapter(viewModelHomePosts.postList, this)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = recyclerViewAdapter
+
+        GlobalScope.launch(Dispatchers.Main) {
+            refreshPosts()
+        }
     }
 
-//    override fun onStart() {
-//        super.onStart()
-//        adapter.startListening()
-//    }
-//
-//    override fun onStop() {
-//        super.onStop()
-//        adapter.stopListening()
-//    }
+    private suspend fun refreshPosts() {
+        viewModelHomePosts.refreshPosts()
+        recyclerViewAdapter.list = viewModelHomePosts.postList
+        recyclerViewAdapter.notifyDataSetChanged()
+        binding.swipeRefreshLayout.setRefreshing(false)
+    }
 
-    override fun onLikeClicked(postId: String) {
-        GlobalScope.launch {
-            postDao.updateLikesInPost(postId)
+    override fun onLiked(post: Post) {
+        GlobalScope.launch(Dispatchers.IO) {
+            postDao.updateLikesInPost(post.docId)
         }
+    }
+
+    override fun onShare(post: Post) {
+        Toast.makeText(this, "Share functionality is yet to be implemented", Toast.LENGTH_SHORT)
+            .show()
+    }
+
+    override fun onComment(post: Post) {
+        val intent = Intent(this, CommentsActivity::class.java)
+        intent.putExtra("postId", post.docId)
+        startActivity(intent)
     }
 }

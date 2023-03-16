@@ -7,41 +7,28 @@ import java.util.concurrent.TimeUnit
 
 class TimePastCalculator {
     companion object{
-        fun covertTimeToText(dataDate: String?): String? {
-            var convTime: String? = null
-            val prefix = ""
-            val suffix = "Ago"
-            try {
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                val pasTime: Date = dateFormat.parse(dataDate)
-                val nowTime = Date()
-                val dateDiff: Long = nowTime.getTime() - pasTime.getTime()
-                val second: Long = TimeUnit.MILLISECONDS.toSeconds(dateDiff)
-                val minute: Long = TimeUnit.MILLISECONDS.toMinutes(dateDiff)
-                val hour: Long = TimeUnit.MILLISECONDS.toHours(dateDiff)
-                val day: Long = TimeUnit.MILLISECONDS.toDays(dateDiff)
-                if (second < 60) {
-                    convTime = "$second Seconds $suffix"
-                } else if (minute < 60) {
-                    convTime = "$minute Minutes $suffix"
-                } else if (hour < 24) {
-                    convTime = "$hour Hours $suffix"
-                } else if (day >= 7) {
-                    convTime = if (day > 360) {
-                        (day / 360).toString() + " Years " + suffix
-                    } else if (day > 30) {
-                        (day / 30).toString() + " Months " + suffix
-                    } else {
-                        (day / 7).toString() + " Week " + suffix
-                    }
-                } else if (day < 7) {
-                    convTime = "$day Days $suffix"
+        val times = Arrays.asList(
+            TimeUnit.DAYS.toMillis(365),
+            TimeUnit.DAYS.toMillis(30),
+            TimeUnit.DAYS.toMillis(1),
+            TimeUnit.HOURS.toMillis(1),
+            TimeUnit.MINUTES.toMillis(1),
+            TimeUnit.SECONDS.toMillis(1)
+        )
+        val timesString = Arrays.asList("year", "month", "day", "hour", "minute", "second")
+
+        fun toDuration(duration: Long): String? {
+            val res = StringBuffer()
+            for (i in 0 until times.size) {
+                val current: Long = times.get(i)
+                val temp = duration / current
+                if (temp > 0) {
+                    res.append(temp).append(" ").append(timesString.get(i))
+                        .append(if (temp != 1L) "s" else "").append(" ago")
+                    break
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("ConvTimeE", e.toString())
             }
-            return convTime
+            return if ("" == res.toString()) "0 seconds ago" else res.toString()
         }
     }
 }

@@ -72,4 +72,20 @@
         android:textColor="#FFFFFF"
         />
 
+    <Button
+        android:id="@+id/quotifyMode"
+        android:padding="10dp"
+        android:layout_width="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/myPostsBtn"
+        android:text="Quotify"
+        android:layout_marginTop="20dp"
+        android:textSize="15dp"
+        android:foregroundTint="#5570F8"
+        app:backgroundTint="#041C92"
+        android:textColor="#FFFFFF"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

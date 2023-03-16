@@ -19,6 +19,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.quotify.QuoteApplication
 import com.example.quotify.R
+import com.example.quotify.SplashActivity
 import com.example.quotify.adapters.ViewPagerAdapterDiaryQuotes
 import com.example.quotify.databinding.ActivityDiaryQuotesBinding
 import com.example.quotify.models.MyQuote
@@ -107,6 +108,13 @@ class DiaryQuotesActivity : AppCompatActivity(), ViewPagerAdapterDiaryQuotes.Ada
         }
         diaryModeBtn.setOnClickListener {
             Toast.makeText(this, "Already in Diary Mode", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        val quoteBookMode=dialog.findViewById<ImageView>(R.id.quoteBookMode)
+        quoteBookMode.setOnClickListener {
+            val intentToQuoteBook = Intent(this, SplashActivity::class.java)
+            intentToQuoteBook.putExtra("waitStatus","false")
+            startActivity(intentToQuoteBook)
             dialog.dismiss()
         }
     }

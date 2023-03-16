@@ -5,15 +5,15 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/splash_activity_bg_gradient"
+    android:background="@drawable/quotebook_user_activity_bg"
     tools:context=".SplashActivity">
 
     <TextView
         android:id="@+id/AppNameSplash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quotify..."
-        android:textSize="80sp"
+        android:text="Quotebook..."
+        android:textSize="50sp"
         android:fontFamily="cursive"
         android:textColor="#FCFFE7"
         app:layout_constraintBottom_toBottomOf="parent"

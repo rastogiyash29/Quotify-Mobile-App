@@ -37,4 +37,14 @@
         app:layout_constraintLeft_toLeftOf="@+id/favouritesMode"
         android:background="@drawable/non_mode_bg"/>
 
+    <ImageView
+        android:id="@+id/quoteBookMode"
+        android:padding="10dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/quotebook_mode_icon"
+        app:layout_constraintTop_toBottomOf="@+id/diaryMode"
+        app:layout_constraintLeft_toLeftOf="@+id/favouritesMode"
+        android:background="@drawable/non_mode_bg"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

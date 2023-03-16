@@ -222,6 +222,7 @@ class ActivityUser : AppCompatActivity() {
         val homeBtn = dialog.findViewById<Button>(R.id.homeBtn)
         val createPostBtn = dialog.findViewById<Button>(R.id.createPostBtn)
         val myPostsBtn = dialog.findViewById<Button>(R.id.myPostsBtn)
+        val quotifyModeBtn=dialog.findViewById<Button>(R.id.quotifyMode)
 
         homeBtn.setOnClickListener {
             val intentToHome = Intent(this, HomePostsViewer::class.java)
@@ -240,7 +241,17 @@ class ActivityUser : AppCompatActivity() {
         }
 
         myPostsBtn.setOnClickListener {
-            Toast.makeText(this, "MyPosts Btn Functionalities not added", Toast.LENGTH_SHORT).show()
+            val intentToMyPosts = Intent(this, MyPostsActivity::class.java)
+            intentToMyPosts.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intentToMyPosts)
+            dialog.dismiss()
+        }
+
+        quotifyModeBtn.setOnClickListener {
+            val intentToQuotify = Intent(this, OnlineQuotesActivity::class.java)
+            intentToQuotify.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intentToQuotify)
+            dialog.dismiss()
         }
     }
 

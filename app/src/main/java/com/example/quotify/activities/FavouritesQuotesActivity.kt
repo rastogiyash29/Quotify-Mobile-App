@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.quotify.QuoteApplication
 import com.example.quotify.R
+import com.example.quotify.SplashActivity
 import com.example.quotify.adapters.ViewPagerAdapterFavouriteQuotes
 import com.example.quotify.adapters.ViewPagerAdapterOnlineQuotes
 import com.example.quotify.databinding.ActivityFavouritesQuotesBinding
@@ -100,6 +101,13 @@ class FavouritesQuotesActivity : AppCompatActivity(),
             val intentToDiary = Intent(this, DiaryQuotesActivity::class.java)
             intentToDiary.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intentToDiary)
+            dialog.dismiss()
+        }
+        val quoteBookMode=dialog.findViewById<ImageView>(R.id.quoteBookMode)
+        quoteBookMode.setOnClickListener {
+            val intentToQuoteBook = Intent(this, SplashActivity::class.java)
+            intentToQuoteBook.putExtra("waitStatus","false")
+            startActivity(intentToQuoteBook)
             dialog.dismiss()
         }
     }
