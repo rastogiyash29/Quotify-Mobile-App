@@ -14,9 +14,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 
 class PostDao {
@@ -76,11 +74,11 @@ class PostDao {
             }
         }
 
-        var commentBoxId: String = ""
+        var commentBoxRef = commentBoxDao.commentBoxCollections.document()
+        val commentBox = CommentBox(commentBoxRef.id, ArrayList())
         val jobNewCommentBox = GlobalScope.launch(Dispatchers.IO) {
             try {
-                val commentBox = commentBoxDao.getNewCommentBox(CommentBox(ArrayList())).await()
-                commentBoxId = commentBox.id
+                commentBoxRef.set(commentBox).await()
                 Log.d("tag", "CommentBox Creation Success")
             } catch (e: Exception) {
                 commentBoxTaskSuccess = false
@@ -100,17 +98,17 @@ class PostDao {
         val newPostDocRef = postCollection.document()
 
         //Creating and uploading image to Firebase server
+        val post =
+            Post(
+                text,
+                imageUrl,
+                user!!,
+                ArrayList(),
+                commentBoxRef.id,
+                System.currentTimeMillis(),
+                newPostDocRef.id
+            )
         val jobUploadPost = GlobalScope.launch {
-            val post =
-                Post(
-                    text,
-                    imageUrl,
-                    user!!,
-                    ArrayList(),
-                    commentBoxId,
-                    System.currentTimeMillis(),
-                    newPostDocRef.id
-                )
             try {
                 newPostDocRef.set(post).await()
                 Log.d("tag", "Post Upload Successful ${newPostDocRef.id}")
@@ -126,7 +124,7 @@ class PostDao {
 
         try {
             postContaninerCollection.document(user!!.myPostsContainer)
-                .update("myPosts", FieldValue.arrayUnion(newPostDocRef.id)).await()
+                .update("myPosts", FieldValue.arrayUnion(post.docId)).await()
             Log.d("tag", "AddPost In User Successfully ******")
         } catch (e: Exception) {
             Log.d("tag", "AddPost In User Failed ******")
@@ -178,6 +176,43 @@ class PostDao {
     //return task of document with particular id
     fun getPostById(id: String): Task<DocumentSnapshot> {
         return postCollection.document(id).get()
+    }
+
+    suspend fun deletePost(post: Post) {
+        val job = GlobalScope.launch {
+            async {
+                try {
+                    postCollection.document(post.docId).delete().await()
+                } catch (e: Exception) {
+                    Log.d("tag", "Post deleted Failed")
+                }
+            }
+            async {
+                try {
+                    commentBoxDao.commentBoxCollections.document(post.commentBox).delete().await()
+                } catch (e: Exception) {
+                    Log.d("tag", "Post commentBox deleted Failed")
+                }
+            }
+            async {
+                try {
+                    val ref = storage.getReferenceFromUrl(post.imageUrl)
+                    ref.delete().await()
+                } catch (e: Exception) {
+                    Log.d("tag", "Image deleted Failed")
+                }
+            }
+            async {
+                try {
+                    postContaninerCollection.document(post.createdBy.myPostsContainer)
+                        .update("myPosts", FieldValue.arrayRemove(post.docId)).await()
+                } catch (e: Exception) {
+                    Log.d("tag", "Post removed form User Failed")
+                }
+            }
+        }
+        job.join()
+        Log.d("tag", "Post deleted completely ****")
     }
 }
 

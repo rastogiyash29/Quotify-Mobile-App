@@ -1,30 +1,45 @@
 package com.example.quotify.activities
 
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quotify.R
+import com.example.quotify.adapters.RecyclerViewFirebaseAdapterHome
 import com.example.quotify.database.PostDao
 import com.example.quotify.databinding.ActivityHomePostsViewerBinding
 import com.example.quotify.models.Post
-import com.example.quotify.testing.RecyclerViewAdapter
+import com.example.quotify.models.User
 import com.example.quotify.view_models.ViewModelFactoryHomePosts
 import com.example.quotify.view_models.ViewModelHomePosts
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
-class HomePostsViewer : AppCompatActivity(), RecyclerViewAdapter.AdapterCallback {
+
+class HomePostsViewer : AppCompatActivity(), RecyclerViewFirebaseAdapterHome.AdapterCallback {
 
 
     private lateinit var viewModelHomePosts: ViewModelHomePosts
-    private lateinit var recyclerViewAdapter: RecyclerViewAdapter
+    private lateinit var recyclerViewFirebaseAdapterHome: RecyclerViewFirebaseAdapterHome
 
     private lateinit var binding: ActivityHomePostsViewerBinding
     private lateinit var postDao: PostDao
@@ -108,9 +123,10 @@ class HomePostsViewer : AppCompatActivity(), RecyclerViewAdapter.AdapterCallback
                 ViewModelHomePosts::class.java
             )
 
-        recyclerViewAdapter = RecyclerViewAdapter(viewModelHomePosts.postList, this)
+        recyclerViewFirebaseAdapterHome =
+            RecyclerViewFirebaseAdapterHome(viewModelHomePosts.postList, this,false)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = recyclerViewAdapter
+        binding.recyclerView.adapter = recyclerViewFirebaseAdapterHome
 
         GlobalScope.launch(Dispatchers.Main) {
             refreshPosts()
@@ -119,8 +135,8 @@ class HomePostsViewer : AppCompatActivity(), RecyclerViewAdapter.AdapterCallback
 
     private suspend fun refreshPosts() {
         viewModelHomePosts.refreshPosts()
-        recyclerViewAdapter.list = viewModelHomePosts.postList
-        recyclerViewAdapter.notifyDataSetChanged()
+        recyclerViewFirebaseAdapterHome.list = viewModelHomePosts.postList
+        recyclerViewFirebaseAdapterHome.notifyDataSetChanged()
         binding.swipeRefreshLayout.setRefreshing(false)
     }
 
@@ -130,14 +146,66 @@ class HomePostsViewer : AppCompatActivity(), RecyclerViewAdapter.AdapterCallback
         }
     }
 
-    override fun onShare(post: Post) {
-        Toast.makeText(this, "Share functionality is yet to be implemented", Toast.LENGTH_SHORT)
-            .show()
+    override fun onShare(itemView: View, post: Post) {
+        val bitmap = viewToImage(itemView)
+        val uri = bitmap?.let { saveImage(it) }
+        uri?.let { shareImageUri(it) }
     }
+
+    private fun shareImageUri(uri: Uri) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.type = "image/png"
+        startActivity(intent)
+    }
+
+    private fun saveImage(image: Bitmap): Uri? {
+        val imagesFolder = File(cacheDir, "images")
+        var uri: Uri? = null
+        try {
+            imagesFolder.mkdirs()
+            val file = File(imagesFolder, "shared_image.png")
+            val stream = FileOutputStream(file)
+            image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            stream.flush()
+            stream.close()
+            uri = FileProvider.getUriForFile(this, "com.mydomain.fileprovider", file)
+        } catch (e: IOException) {
+            Log.d(TAG, "IOException while trying to write file for sharing: " + e.message)
+        }
+        return uri
+    }
+
+    private fun viewToImage(view: View): Bitmap? {
+        val returnedBitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(returnedBitmap)
+        val bgDrawable = view.background
+        if (bgDrawable != null) bgDrawable.draw(canvas) else canvas.drawColor(Color.WHITE)
+        view.draw(canvas)
+        return returnedBitmap
+    }
+
 
     override fun onComment(post: Post) {
         val intent = Intent(this, CommentsActivity::class.java)
         intent.putExtra("postId", post.docId)
         startActivity(intent)
+    }
+
+    override fun onProfileClicked(user: User) {
+        val intentToViewProfile: Intent
+        if (user.uid.compareTo(Firebase.auth.uid!!) != 0) {
+            intentToViewProfile = Intent(this, ActivityShowUserProfileOthers::class.java)
+            intentToViewProfile.putExtra("id", user.uid)
+        } else {
+            intentToViewProfile = Intent(this, ActivityUser::class.java)
+        }
+        intentToViewProfile.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+        startActivity(intentToViewProfile)
+    }
+
+    override fun onDeletePost(post: Post) {
+        //No deletion form home
     }
 }

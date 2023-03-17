@@ -10,11 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.quotify.R
 import com.example.quotify.models.Post
+import com.example.quotify.models.User
 import com.example.quotify.utils.TimePastCalculator
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class RecyclerViewFirebaseAdapterHome(var list: List<Post>, private var context: Context) :
+class RecyclerViewFirebaseAdapterHome(
+    var list: List<Post>,
+    private var context: Context,
+    val enableDelete: Boolean
+) :
     RecyclerView.Adapter<RecyclerViewFirebaseAdapterHome.PostViewHolder>() {
 
     private var adapterCallback: AdapterCallback? = null
@@ -35,6 +40,7 @@ class RecyclerViewFirebaseAdapterHome(var list: List<Post>, private var context:
         val commentBox = itemView.findViewById<ImageView>(R.id.commentBtn)
         val timeStamp = itemView.findViewById<TextView>(R.id.timeStamp)
         val shareBtn = itemView.findViewById<ImageView>(R.id.shareBtn)
+        val deletePostBtn=itemView.findViewById<ImageView>(R.id.deletePostBtn)
 
         var liked = false
         var likeCount = 0
@@ -48,6 +54,9 @@ class RecyclerViewFirebaseAdapterHome(var list: List<Post>, private var context:
         val viewHolder = PostViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.post_layout, parent, false)
         )
+        if(enableDelete){
+            viewHolder.deletePostBtn.visibility=View.VISIBLE
+        }
         return viewHolder
     }
 
@@ -84,10 +93,16 @@ class RecyclerViewFirebaseAdapterHome(var list: List<Post>, private var context:
             adapterCallback?.onLiked(post)
         }
         holder.shareBtn.setOnClickListener {
-            adapterCallback?.onShare(post)
+            adapterCallback?.onShare(holder.itemView, post)
         }
         holder.commentBox.setOnClickListener {
             adapterCallback?.onComment(post)
+        }
+        holder.authorNameTV.setOnClickListener {
+            adapterCallback?.onProfileClicked(post.createdBy)
+        }
+        holder.deletePostBtn.setOnClickListener {
+            adapterCallback?.onDeletePost(post)
         }
         holder.timeStamp.text =
             TimePastCalculator.toDuration(System.currentTimeMillis() - post.createdAt)
@@ -100,8 +115,10 @@ class RecyclerViewFirebaseAdapterHome(var list: List<Post>, private var context:
     //Interface to call Activity Methods
     interface AdapterCallback {
         fun onLiked(post: Post)
-        fun onShare(post: Post)
+        fun onShare(itemView: View, post: Post)
         fun onComment(post: Post)
+        fun onProfileClicked(user: User)
+        fun onDeletePost(post:Post)
     }
 
 }

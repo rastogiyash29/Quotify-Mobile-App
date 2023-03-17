@@ -104,4 +104,12 @@ class CommentsActivity : AppCompatActivity(), RecyclerViewCommentAdapter.Adapter
             refreshComments()
         }
     }
+
+    override fun onDeleteComment(comment: Comment) {
+        commentBox.list.remove(comment)
+        binding.recyclerView.adapter!!.notifyDataSetChanged()
+        GlobalScope.launch {
+            commentBoxDao.deleteCommentFromBoxId(comment, commentBox.docId)
+        }
+    }
 }

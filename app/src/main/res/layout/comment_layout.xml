@@ -60,6 +60,17 @@
             app:layout_constraintTop_toBottomOf="@id/commentText"
             tools:text="Just Now" />
 
+        <ImageView
+            android:id="@+id/deleteCommentBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:src="@drawable/ic_baseline_delete_forever_24_white"
+            android:background="@drawable/button_bg_setter_pink"
+            android:visibility="gone"
+            />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

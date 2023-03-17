@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide
 import com.example.quotify.R
 import com.example.quotify.utils.TimePastCalculator
 import com.example.tempapp.models.Comment
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 class RecyclerViewCommentAdapter(var list: List<Comment>, private var context: Context) :
@@ -29,6 +31,7 @@ class RecyclerViewCommentAdapter(var list: List<Comment>, private var context: C
         val profilePhotoIV = itemView.findViewById<ImageView>(R.id.profilePhoto)
         val commentTextTV = itemView.findViewById<TextView>(R.id.commentText)
         val timeStamp = itemView.findViewById<TextView>(R.id.timeStamp)
+        val deleteCommentBtn = itemView.findViewById<ImageView>(R.id.deleteCommentBtn)
     }
 
 
@@ -51,6 +54,14 @@ class RecyclerViewCommentAdapter(var list: List<Comment>, private var context: C
         holder.commentTextTV.text = comment.text
         holder.timeStamp.text =
             TimePastCalculator.toDuration(System.currentTimeMillis() - comment.createdAt)
+        if (comment.user.uid.compareTo(Firebase.auth.uid!!) == 0) {
+            holder.deleteCommentBtn.visibility = View.VISIBLE
+        } else {
+            holder.deleteCommentBtn.visibility = View.GONE
+        }
+        holder.deleteCommentBtn.setOnClickListener {
+            adapterCallback?.onDeleteComment(comment)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -59,6 +70,6 @@ class RecyclerViewCommentAdapter(var list: List<Comment>, private var context: C
 
     //Interface to call Activity Methods
     interface AdapterCallback {
-
+        fun onDeleteComment(comment: Comment)
     }
 }

@@ -5,6 +5,7 @@
     <!-- Internet Permission -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".QuoteApplication"
@@ -18,13 +19,24 @@
         android:theme="@style/Theme.Quotify"
         tools:targetApi="31">
         <activity
+            android:name=".activities.ActivityShowUserProfileOthers"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SpecificPostViewer"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.mydomain.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
             android:name=".activities.CommentsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.SpecificPostViewerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.MyPostsActivity"
             android:exported="false" />
         <activity
             android:name=".activities.HomePostsViewer"
@@ -37,8 +49,7 @@
             android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".activities.DiaryQuotesActivity"
             android:exported="false" />
@@ -50,9 +61,10 @@
             android:exported="true" />
         <activity
             android:name=".SplashActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

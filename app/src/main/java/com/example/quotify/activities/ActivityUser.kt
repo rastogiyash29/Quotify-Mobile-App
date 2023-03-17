@@ -222,7 +222,7 @@ class ActivityUser : AppCompatActivity() {
         val homeBtn = dialog.findViewById<Button>(R.id.homeBtn)
         val createPostBtn = dialog.findViewById<Button>(R.id.createPostBtn)
         val myPostsBtn = dialog.findViewById<Button>(R.id.myPostsBtn)
-        val quotifyModeBtn=dialog.findViewById<Button>(R.id.quotifyMode)
+        val quotifyModeBtn = dialog.findViewById<Button>(R.id.quotifyMode)
 
         homeBtn.setOnClickListener {
             val intentToHome = Intent(this, HomePostsViewer::class.java)
@@ -241,8 +241,10 @@ class ActivityUser : AppCompatActivity() {
         }
 
         myPostsBtn.setOnClickListener {
-            val intentToMyPosts = Intent(this, MyPostsActivity::class.java)
+            val intentToMyPosts = Intent(this, SpecificPostViewer::class.java)
             intentToMyPosts.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            intentToMyPosts.putExtra("mode", "person")
+            intentToMyPosts.putExtra("id", "${auth.uid}")
             startActivity(intentToMyPosts)
             dialog.dismiss()
         }
