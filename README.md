@@ -7,7 +7,7 @@
 •	Programmed application using Kotlin and XML
 
 # Download App:
-https://drive.google.com/file/d/1G_EfKcNkzMFwTjwSQw-aOfHl08dTdYF7/view?usp=sharing
+Download file from Release section.
 
 # Screenshots:
 **1. Authentication**<br>
