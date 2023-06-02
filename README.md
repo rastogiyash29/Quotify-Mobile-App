@@ -7,7 +7,7 @@
 •	Programmed application using Kotlin and XML
 
 Screenshots:
-![WhatsApp Image 2023-06-02 at 11 51 13](https://github.com/rastogiyash29/Quotify/assets/105515175/c30d00d7-b9a2-4cf2-8446-eeb2a7bf93ef|width=250px)
+<img src="https://github.com/rastogiyash29/Quotify/assets/105515175/c30d00d7-b9a2-4cf2-8446-eeb2a7bf93ef" width="100" height="100">
 ![2](https://github.com/rastogiyash29/Quotify/assets/105515175/f06dae4c-418f-4b60-b5bd-33c1d0a7b0ea)
 ![3](https://github.com/rastogiyash29/Quotify/assets/105515175/4982d8ba-ab40-4ec4-bd39-6ad525a99da9)
 ![4](https://github.com/rastogiyash29/Quotify/assets/105515175/3ac00ff1-70bf-4473-ac54-62c139101eac)
